@@ -1,0 +1,16 @@
+"","XVAR_names","spp_rich_N_Mods_AIC","spp_rich_N_Mods_fit",""
+"spp_rich_N",N,33358.1996628149,0.0999219479791584,spp_rich ~ N
+"spp_rich_N_poly",N_poly,33264.5799770517,0.109746855458109,spp_rich ~ poly(N, 2)
+"spp_rich_N_clim",N_clim,32816.3969987281,0.154969415018684,spp_rich ~ N + maxaug_c + mindec_c + precip_cm + CMD
+"spp_rich_N_poly_clim",N_poly_clim,32817.3531568716,0.155070657609697,spp_rich ~ poly(N, 2) + maxaug_c + mindec_c + precip_cm + CMD
+"spp_rich_clim",clim,33429.4888509229,0.0931512736105603,spp_rich ~ maxaug_c + mindec_c + precip_cm + CMD
+"spp_rich_N_maxaug_c",N_maxaug_c,33220.8327902462,0.114206043992343,spp_rich ~ N + maxaug_c
+"spp_rich_N_mindec_c",N_mindec_c,33193.233077529,0.117007808724542,spp_rich ~ N + mindec_c
+"spp_rich_N_precip_cm",N_precip_cm,33062.805279847,0.130128668394381,spp_rich ~ N + precip_cm
+"spp_rich_N_continen",N_continen,32920.2282138508,0.144248773431937,spp_rich ~ N + continen
+"spp_rich_N_CMD",N_CMD,33243.3425076544,0.111914405724463,spp_rich ~ N + CMD
+"spp_rich_Max C Aug Temp",Max C Aug Temp,33710.5205661568,0.0627759582275255,spp_rich ~ maxaug_c
+"spp_rich_Min C Dec Temp",Min C Dec Temp,34192.4680405664,0.00946785679445905,spp_rich ~ mindec_c
+"spp_rich_Precip_cm",Precip_cm,33910.368466791,0.0410281302018493,spp_rich ~ precip_cm
+"spp_rich_Continentality",Continentality,33626.6724485334,0.0717529458585756,spp_rich ~ continen
+"spp_rich_CMD",CMD,34095.8723957963,0.020389873165707,spp_rich ~ CMD
