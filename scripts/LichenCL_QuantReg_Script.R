@@ -1,15 +1,34 @@
 ##Final script for 90th quantile regression analyses of lichen community measures for the US based on USFS plots.
 ##Abundance:filter by lichen index(eg.cyanolichens),delete1’sand2’s,sumthe3’sand4’s by lichen index (eg.cyanolichen)
 
-## Set working directory wherever you've put the files to be rewad in
+## Set working directory wherever you've put the files to be written
 ##setwd('/Users/peternelson1/Documents/UMFK/ORAU/FilesforPeter/Analysis/')
 
-## Load required packages
-require(plyr)
-require(quantreg)
-require(tidyverse)
-require(scales)
-require(vegan)
+## Install required packages
+#Function taken from https://nhsrcommunity.com/blog/a-simple-function-to-install-and-load-packages-in-r/
+install_or_load_pack <- function(pack){
+  
+  create.pkg <- pack[!(pack %in% installed.packages()[, "Package"])]
+  
+  if (length(create.pkg))
+    
+    install.packages(create.pkg, dependencies = TRUE)
+  
+  sapply(pack, require, character.only = TRUE)
+  
+  #I know I should be using purr here, but this is before the Tidyverse is loaded. I know you Tidyverse trend setters will have me here.
+  
+}
+
+packs<-c("plyr",
+         "quantreg",
+         "tidyverse",
+         "scales",
+         "vegan",
+         "fmsb")
+
+install_or_load_pack(packs)
+
 ## Read in data
 ## Lichen community data; 127001 rows of individual lichen observations, three measures of abundance,
 ## many columns of pollutant data through time, some plot location information. 
@@ -47,11 +66,9 @@ LichFncGrp_ms<-read.csv(file="Supplementary Table 2.csv",header=T)
 # tab and put it in its own spreadsheet for use in R.
 NS_vs_Indices<-read.csv(file="N&SscoresVsLichenIndicesDB.csv",header=T)
 
-
 ## In NS_vs_Indices, make megadbid a factor so it can be joined to other tables
 #NS_vs_Indices$megadbid<-as.factor(NS_vs_Indices$megadbid)
 NS_vs_Indices$megadbid<-as.integer(NS_vs_Indices$megadbid)
-
 
 ## Add counts of larger functional groupings
 NS_vs_Indices<-NS_vs_Indices %>% 
@@ -68,8 +85,6 @@ NS_vs_Indices_S_CMD_only<-inner_join(Lichen_Indices_Smods_US_toR,ClimateNA, by= 
 #NS_vs_Indices_S_CMD_only$Plot<-as.factor(NS_vs_Indices_S_CMD$Plot);
 NS_vs_Indices_N_CMD_only$Plot<-as.integer(NS_vs_Indices_N_CMD$Plot);
 NS_vs_Indices_S_CMD_only$Plot<-as.integer(NS_vs_Indices_S_CMD$Plot);
-
-
 
 ## Change CMD values that are below 0 to zero
 NS_vs_Indices_N_CMD_only$CMD[NS_vs_Indices_N_CMD_only$CMD<0]<-0
@@ -219,8 +234,6 @@ LichDb_wFncGrp_sumlog_noNA,
 LichDb_wSens_sumlog_noNA,
 LichDb_wFncGrp_sum34_max4_noNA),by='megadbid',type='left')%>% as.data.frame()
 
-detach(package:plyr)
-
 LichDb_sFncGrpSens_All_Abun$megadbid<-as.integer(LichDb_sFncGrpSens_All_Abun$megadbid)
 #LichDb_sFncGrpSens_All_Abun$megadbid<-as.factor(LichDb_sFncGrpSens_All_Abun$megadbid)
 
@@ -241,7 +254,6 @@ LichDb_sFncGrpSens_All_Abun_N_West<-subset(LichDb_sFncGrpSens_All_Abun_N,Area=="
 LichDb_sFncGrpSens_All_Abun_S<-NS_vs_Indices%>%
 inner_join(NS_vs_Indices_S_CMD_only,by=c("megadbid"="Plot"))%>%
 inner_join(LichDb_sFncGrpSens_All_Abun,by=c("megadbid"))
-##detach(package:plyr)	
 
 ##Remove Nitrogen to avoid using wrong dataset
 #LichDb_sFncGrpSens_All_Abun_S<-LichDb_sFncGrpSens_All_Abun_S[-LichDb_sFncGrpSens_All_Abun_S$N]
@@ -249,6 +261,3 @@ inner_join(LichDb_sFncGrpSens_All_Abun,by=c("megadbid"))
 ##East and West LichDb_sFncGrpSens_All_Abun
 LichDb_sFncGrpSens_All_Abun_S_East<-subset(LichDb_sFncGrpSens_All_Abun_S,Area=="East")
 LichDb_sFncGrpSens_All_Abun_S_West<-subset(LichDb_sFncGrpSens_All_Abun_S,Area=="West")
-
-
-	
