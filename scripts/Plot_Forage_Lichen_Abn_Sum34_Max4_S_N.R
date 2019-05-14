@@ -73,7 +73,7 @@ Abn_For_sum34_max4_N_Mods_AIC<-lapply(Abn_For_sum34_max4_N_Mods_run,AIC)
 Abn_For_sum34_max4_N_Lichen_Abundance_vs_N_Stats<-cbind(XVAR_names,Abn_For_sum34_max4_N_Mods_AIC,Abn_For_sum34_max4_N_Mods_fit,paste(Abn_For_sum34_max4_N_Formula))
   
   ## Save model stats as an output file
-write.csv(Abn_For_sum34_max4_N_Lichen_Abundance_vs_N_Stats,"Abundance_Abn_For_sum34_max4_N_all_models.csv")
+write.csv(Abn_For_sum34_max4_N_Lichen_Abundance_vs_N_Stats,"output/Abundance_Abn_For_sum34_max4_N_all_models.csv")
 
 	## Make predicted data files
 	## Use a model file ... Abn_For_sum34_max4_Mods_run as input
@@ -83,7 +83,7 @@ MyFunc2<-function (x) {as.data.frame(predict(x, SOURCE, interval=c("confidence")
 Abn_For_sum34_max4_N_Mod_pred<-mapply(MyFunc2,Abn_For_sum34_max4_N_Mods_run)%>%as.data.frame()
 
   #Creates a pdf of all models for a given lichen group. Only used for comparing models. Not for final model plotting.
-pdf(paste("Abn_For_sum34_max4_N_Lichen_Abundance_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".pdf",sep=""))
+pdf(paste("output/Abn_For_sum34_max4_N_Lichen_Abundance_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".pdf",sep=""))
 
 MyPlot<-function (x)
 {
@@ -102,6 +102,19 @@ MyPlot<-function (x)
 }	
 for (i in 1:length(XVAR)) MyPlot()
 dev.off()
+
+  #Make object with fitted values for polynomial model for use  in calculating response to deposition increments
+x<-Abn_For_sum34_max4_N_Mod_pred[2]
+x<-unlist(x, recursive = F, use.names =T)
+y<-Abn_For_sum34_max4_N_Mod_pred[4]
+clim<-unlist(y[1], recursive = F, use.names =T)
+clim_pred<-unlist(clim[1], recursive = F, use.names =T)
+fit<-unlist(x[1], recursive = F, use.names =T)
+low<-unlist(x[2], recursive = F, use.names =T)
+high<-unlist(x[3], recursive = F, use.names =T)
+SOURCE_N_fPlot<-cbind(SOURCE, fit, low, high, clim_pred)
+SOURCE_N_fPlot<-subset(SOURCE_N_fPlot, N < 12.5)    
+
   
   #Calculate confidence intervals for percent decline in lichen metric for a bunch of deposition increments
 new_n_Abn_For_sum34_max4<-c(1,1.5,2,2.5,3,5,7.5,10,12.5,15,17.5) %>% as.data.frame() #,20
@@ -133,7 +146,7 @@ colnames(test_n)<-"N"
   #returns percent decline
 1-(predict(Abn_For_sum34_max4_N_Mods_run$Abn_For_sum34_max4_N_poly, test_n))/max(Abn_For_sum34_max4_N_Mod_pred$Abn_For_sum34_max4_N_poly$fit)
   #returns absolute decline
-predict(Abn_For_sum34_max4_N_Mods_run$Abn_For_sum34_max4_N_poly, test_high_n) %>% as.matrix()
+predict(Abn_For_sum34_max4_N_Mods_run$Abn_For_sum34_max4_N_poly, test_n) %>% as.matrix()
 
   #Take deposition associated with incremental percent decline and calculate confidence intervals
 n_pct_Abn_For_sum34_max4<-c(0.08,0.52,1.00,1.95,5.30,10.4)%>% as.data.frame()
@@ -159,10 +172,10 @@ n_pct_CI_Abn_For_sum34_max4
       round(coefficients(Abn_For_sum34_max4_N_Mods_run$Abn_For_sum34_max4_N_poly),2)
       # 30.36                -3.51                 0.11 
 
-			  tiff(paste("Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
-			  #jpeg(paste("Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".jpeg",sep=""))
-			  #jpeg(paste("Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.jpeg",sep=""))
-			  #tiff(paste("Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
+			   tiff(paste("output/Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
+			  #jpeg(paste("output/Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".jpeg",sep=""))
+			  #jpeg(paste("output/Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.jpeg",sep=""))
+			  #tiff(paste("output/Abn_For_sum34_max4_N_Forage Lichen_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
 			  
 			  x<-Abn_For_sum34_max4_N_Mod_pred[2]
 			  x<-unlist(x, recursive = F, use.names =T)
@@ -250,7 +263,7 @@ Abn_For_S_sum34_max4_Mods_AIC<-lapply(Abn_For_S_sum34_max4_Mods_run,AIC)
 Abn_For_sum34_max4_LicheS_Abundance_vs_S_Stats<-cbind(XVAR_names,Abn_For_S_sum34_max4_Mods_AIC,Abn_For_S_sum34_max4_Mods_fit,paste(Abn_For_S_sum34_max4_Formula))
   
   ## Save model stats as an output file
-write.csv(Abn_For_sum34_max4_LicheS_Abundance_vs_S_Stats,"Abundance_Abn_For_sum34_max4_S_all_models.csv")
+write.csv(Abn_For_sum34_max4_LicheS_Abundance_vs_S_Stats,"output/Abundance_Abn_For_sum34_max4_S_all_models.csv")
 
 	## Make predicted data files
 	## Use a model file ... Abn_For_S_sum34_max4_Mods_run as input
@@ -260,7 +273,7 @@ MyFunc2<-function (x) {as.data.frame(predict(x, SOURCE, interval=c("confidence")
 Abn_For_S_sum34_max4_Mod_pred<-mapply(MyFunc2,Abn_For_S_sum34_max4_Mods_run)%>%as.data.frame()
 
   #Creates a pdf of all models for a given lichen group. Only used for comparing models. Not for final model plotting.        	
-pdf(paste("Abn_For_sum34_max4_Lichen_Abundance_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),".pdf",sep=""))
+pdf(paste("output/Abn_For_sum34_max4_Lichen_Abundance_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),".pdf",sep=""))
 MyPlot<-function (x)
   
 {
@@ -281,6 +294,18 @@ MyPlot<-function (x)
 }	
 for (i in 1:length(XVAR)) MyPlot()
 dev.off()
+
+  #Make object with fitted values for polynomial model for use  in calculating response to deposition increments
+x<-Abn_For_S_sum34_max4_Mod_pred[2]
+y<-Abn_For_S_sum34_max4_Mod_pred[4]
+clim<-unlist(y[1], recursive = F, use.names =T)
+x<-unlist(x, recursive = F, use.names =T)
+fit<-unlist(x[1], recursive = F, use.names =T)
+low<-unlist(x[2], recursive = F, use.names =T)
+high<-unlist(x[3], recursive = F, use.names =T)
+clim_pred<-unlist(clim[1], recursive = F, use.names =T)
+SOURCE_S_fPlot<-cbind(SOURCE, fit, low, high, clim_pred)
+SOURCE_S_fPlot<-subset(SOURCE_S_fPlot, S < 20)
 
   #Calculate confidence intervals for percent decline in lichen metric for a bunch of deposition increments
 new_s_Abn_For_S_sum34_max4<-c(1,1.5,2,2.5,3,5,7.5,10,12.5,15,17.5,20) %>% as.data.frame()
@@ -345,10 +370,10 @@ s_pct_CI_Abn_For_S_sum34_max4
         round(coefficients(Abn_For_S_sum34_max4_Mods_run$Abn_For_sum34_max4_S_poly),2)
         #23.99                -2.10                 0.05 
         
-        #tiff(paste("Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),".tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
-        # jpeg(paste("Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),".jpeg",sep=""))
-        # jpeg(paste("Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.jpeg",sep=""))
-        tiff(paste("Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
+        #tiff(paste("output/Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),".tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
+        #jpeg(paste("output/Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),".jpeg",sep=""))
+        #jpeg(paste("output/Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.jpeg",sep=""))
+         tiff(paste("output/Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),"_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
         
         # jpeg(paste("Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),"_noyaxis_nolegend.jpeg",sep=""))
         #tiff(paste("Abn_For_sum34_max4_S_Forage Lichen_vs_S_percentiles","_",format(Sys.time(),"%y%d%m"),"_noyaxis_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)

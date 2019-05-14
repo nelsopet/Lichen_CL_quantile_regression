@@ -1,0 +1,16 @@
+"","XVAR_names","N.oligotroph._N_Mods_AIC","N.oligotroph._N_Mods_fit",""
+"N.oligotroph._N",N,28698.2274440492,0.18808425565547,N.oligotroph. ~ N
+"N.oligotroph._N_poly",N_poly,28672.1256645887,0.190698984554619,N.oligotroph. ~ poly(N, 2, raw = T)
+"N.oligotroph._N_clim",N_clim,27990.401997793,0.252128541417824,N.oligotroph. ~ N + maxaug_c + mindec_c + precip_cm + CMD
+"N.oligotroph._N_poly_clim",N_poly_clim,27872.8739521319,0.262319219252591,N.oligotroph. ~ poly(N, 2, raw = T) + maxaug_c + mindec_c + precip_cm + CMD
+"N.oligotroph._clim",clim,29484.0155843443,0.11206021238952,N.oligotroph. ~ maxaug_c + mindec_c + precip_cm + CMD
+"N.oligotroph._N_maxaug_c",N_maxaug_c,28249.2001781399,0.229048269543248,N.oligotroph. ~ N + maxaug_c
+"N.oligotroph._N_mindec_c",N_mindec_c,28453.1993109539,0.21078274042893,N.oligotroph. ~ N + mindec_c
+"N.oligotroph._N_precip_cm",N_precip_cm,28641.2561341049,0.193561534312535,N.oligotroph. ~ N + precip_cm
+"N.oligotroph._N_continen",N_continen,28699.8380904927,0.188120540689758,N.oligotroph. ~ N + continen
+"N.oligotroph._N_CMD",N_CMD,28092.9606246201,0.242751149325911,N.oligotroph. ~ N + CMD
+"N.oligotroph._Max C Aug Temp",Max C Aug Temp,29669.4611537504,0.0923318288197926,N.oligotroph. ~ maxaug_c
+"N.oligotroph._Min C Dec Temp",Min C Dec Temp,30419.0775927034,0.0107738319124039,N.oligotroph. ~ mindec_c
+"N.oligotroph._Precip_cm",Precip_cm,30430.5955331044,0.0094651332044916,N.oligotroph. ~ precip_cm
+"N.oligotroph._Continentality",Continentality,30389.4295113474,0.0141345768428676,N.oligotroph. ~ continen
+"N.oligotroph._CMD",CMD,30182.4135339172,0.0372847350208689,N.oligotroph. ~ CMD

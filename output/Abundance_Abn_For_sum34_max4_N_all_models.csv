@@ -1,0 +1,16 @@
+"","XVAR_names","Abn_For_sum34_max4_N_Mods_AIC","Abn_For_sum34_max4_N_Mods_fit",""
+"Abn_For_sum34_max4_N",N,32342.1333781336,0.226706338810085,Abn_For_sum34_max4 ~ N
+"Abn_For_sum34_max4_N_poly",N_poly,31982.45814004,0.258152074825008,Abn_For_sum34_max4 ~ poly(N, 2, raw = T)
+"Abn_For_sum34_max4_N_clim",N_clim,31856.1600579785,0.269332471216737,Abn_For_sum34_max4 ~ N + maxaug_c + mindec_c + precip_cm + CMD
+"Abn_For_sum34_max4_N_poly_clim",N_poly_clim,31626.4234772496,0.288511794847383,Abn_For_sum34_max4 ~ poly(N, 2, raw = T) + maxaug_c + mindec_c + precip_cm + CMD
+"Abn_For_sum34_max4_clim",clim,33291.4611307771,0.138273442823321,Abn_For_sum34_max4 ~ maxaug_c + mindec_c + precip_cm + CMD
+"Abn_For_sum34_max4_N_maxaug_c",N_maxaug_c,32237.3320052104,0.236128360647025,Abn_For_sum34_max4 ~ N + maxaug_c
+"Abn_For_sum34_max4_N_mindec_c",N_mindec_c,32204.4054608235,0.23900992441969,Abn_For_sum34_max4 ~ N + mindec_c
+"Abn_For_sum34_max4_N_precip_cm",N_precip_cm,32234.2912257287,0.236394930882714,Abn_For_sum34_max4 ~ N + precip_cm
+"Abn_For_sum34_max4_N_continen",N_continen,31950.9363538876,0.260831381290472,Abn_For_sum34_max4 ~ N + continen
+"Abn_For_sum34_max4_N_CMD",N_CMD,32259.7450852097,0.234160642784785,Abn_For_sum34_max4 ~ N + CMD
+"Abn_For_sum34_max4_Max C Aug Temp",Max C Aug Temp,33733.7780082928,0.0927684606459823,Abn_For_sum34_max4 ~ maxaug_c
+"Abn_For_sum34_max4_Min C Dec Temp",Min C Dec Temp,34562.413118804,0.00224084359444587,Abn_For_sum34_max4 ~ mindec_c
+"Abn_For_sum34_max4_Precip_cm",Precip_cm,34436.3555780169,0.0165738891325495,Abn_For_sum34_max4 ~ precip_cm
+"Abn_For_sum34_max4_Continentality",Continentality,34068.9199028909,0.0571881931709021,Abn_For_sum34_max4 ~ continen
+"Abn_For_sum34_max4_CMD",CMD,34516.8186336659,0.00744900243324476,Abn_For_sum34_max4 ~ CMD

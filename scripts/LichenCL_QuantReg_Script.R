@@ -1,9 +1,6 @@
 ##Final script for 90th quantile regression analyses of lichen community measures for the US based on USFS plots.
 ##Abundance:filter by lichen index(eg.cyanolichens),delete1’sand2’s,sumthe3’sand4’s by lichen index (eg.cyanolichen)
 
-## Set working directory wherever you've put the files to be written
-##setwd('/Users/peternelson1/Documents/UMFK/ORAU/FilesforPeter/Analysis/')
-
 ## Install required packages
 #Function taken from https://nhsrcommunity.com/blog/a-simple-function-to-install-and-load-packages-in-r/
 install_or_load_pack <- function(pack){
@@ -32,22 +29,22 @@ install_or_load_pack(packs)
 ## Read in data
 ## Lichen community data; 127001 rows of individual lichen observations, three measures of abundance,
 ## many columns of pollutant data through time, some plot location information. 
-LichDb_raw<-read.csv(file="LichenDB9.csv",header=T)
+LichDb_raw<-read.csv(file="data/LichenDB9.csv",header=T)
 
 # Climate data; 5322 rows of output from ClimateNA which are 1960-1999 normals)
-ClimateNA<-read.csv(file="ForClimateNa_Normal_1961_1990Y.csv",header=T)
+ClimateNA<-read.csv(file="data/ForClimateNa_Normal_1961_1990Y.csv",header=T)
 
 # 4356 rows; Five lichen community indices (N_sens, N_oligo, N_For, N_Cyan, spp_rich) and plot number
 # Why is N_sens in here? That wouldn't apply to N dep. Was this included inadvertently?
-Lichen_Indices_Nmods_US_toR<-read.csv(file="Lichen_Indices_Nmods_US_toR.csv", header=T)
+Lichen_Indices_Nmods_US_toR<-read.csv(file="data/Lichen_Indices_Nmods_US_toR.csv", header=T)
 
 # 5172 rows; Five lichen community indices (N_sens, N_oligo, N_For, N_Cyan, spp_rich) and plot number
 # Why is N_oligo in here? That wouldn't apply to S dep. Was this included inadvertently?
-Lichen_Indices_Smods_US_toR<-read.csv(file="Lichen_Indices_Smods_US_toR.csv", header=T)
+Lichen_Indices_Smods_US_toR<-read.csv(file="data/Lichen_Indices_Smods_US_toR.csv", header=T)
 
 # 849 rows; Four variables of Sensitivity, Pollutant, Area and Functional group with SciCode and Name
 # This is from the national lichen critical load manuscript
-LichFncGrp<-read.csv(file="LichenFunctionalGroups.csv",header=T)
+LichFncGrp<-read.csv(file="data/LichenFunctionalGroups.csv",header=T)
 LichFncGrp$'Functional.Group'<-as.character(LichFncGrp$'Functional.Group')
 LichFncGrp$'Functional.Group'[LichFncGrp$'Functional.Group'=="hv matrix"]<-"matrix"
 LichFncGrp$'Functional.Group'[LichFncGrp$'Functional.Group'=="lv matrix"]<-"matrix"
@@ -58,16 +55,15 @@ LichFncGrp$'Functional.Group'<-as.factor(LichFncGrp$'Functional.Group')
 
 # 804 rows; Supplmentary table from manuscript that has various species-level data including finer levels of functional
 # groups 
-LichFncGrp_ms<-read.csv(file="Supplementary Table 2.csv",header=T)
+LichFncGrp_ms<-read.csv(file="data/Supplementary Table 2.csv",header=T)
 
 # 5322 rows; Fifty seven columns, all climate variables except CMD are here; most of the functional group measures
 # are also in this file as is deposition. Why then do I need the other climate files?
 # This file came from the original spreadsheet Linda had been using for comparing the different indices. I took one
 # tab and put it in its own spreadsheet for use in R.
-NS_vs_Indices<-read.csv(file="N&SscoresVsLichenIndicesDB.csv",header=T)
+NS_vs_Indices<-read.csv(file="data/N&SscoresVsLichenIndicesDB.csv",header=T)
 
 ## In NS_vs_Indices, make megadbid a factor so it can be joined to other tables
-#NS_vs_Indices$megadbid<-as.factor(NS_vs_Indices$megadbid)
 NS_vs_Indices$megadbid<-as.integer(NS_vs_Indices$megadbid)
 
 ## Add counts of larger functional groupings
@@ -81,17 +77,14 @@ NS_vs_Indices_N_CMD_only<-inner_join(Lichen_Indices_Nmods_US_toR,ClimateNA, by= 
 NS_vs_Indices_S_CMD_only<-inner_join(Lichen_Indices_Smods_US_toR,ClimateNA, by= "Plot") %>% select(Plot, CMD)
 
 ## Make plots factors
-#NS_vs_Indices_N_CMD_only$Plot<-as.factor(NS_vs_Indices_N_CMD$Plot);
-#NS_vs_Indices_S_CMD_only$Plot<-as.factor(NS_vs_Indices_S_CMD$Plot);
-NS_vs_Indices_N_CMD_only$Plot<-as.integer(NS_vs_Indices_N_CMD$Plot);
-NS_vs_Indices_S_CMD_only$Plot<-as.integer(NS_vs_Indices_S_CMD$Plot);
+NS_vs_Indices_N_CMD_only$Plot<-as.integer(NS_vs_Indices_N_CMD_only$Plot);
+NS_vs_Indices_S_CMD_only$Plot<-as.integer(NS_vs_Indices_S_CMD_only$Plot);
 
 ## Change CMD values that are below 0 to zero
 NS_vs_Indices_N_CMD_only$CMD[NS_vs_Indices_N_CMD_only$CMD<0]<-0
 NS_vs_Indices_S_CMD_only$CMD[NS_vs_Indices_S_CMD_only$CMD<0]<-0
 
 ## In raw lichen community data, change NAs to 3’s and abundances >4 back to 3’s
-#LichDb_raw$megadbid<-as.factor(LichDb_raw$megadbid)
 LichDb_raw$megadbid<-as.integer(LichDb_raw$megadbid)
 LichDb_raw$maxabun[is.na(LichDb_raw$maxabun)]<-3
 LichDb_raw$maxabun[LichDb_raw$maxabun>4]<-3
@@ -235,10 +228,9 @@ LichDb_wSens_sumlog_noNA,
 LichDb_wFncGrp_sum34_max4_noNA),by='megadbid',type='left')%>% as.data.frame()
 
 LichDb_sFncGrpSens_All_Abun$megadbid<-as.integer(LichDb_sFncGrpSens_All_Abun$megadbid)
-#LichDb_sFncGrpSens_All_Abun$megadbid<-as.factor(LichDb_sFncGrpSens_All_Abun$megadbid)
 
 ## write csv file for use outside R
-LichDb_sFncGrpSens_All_Abun<-write.csv(LichDb_sFncGrpSens_All_Abun, "LichDb_sFncGrpSens_All_Abun.csv")
+write.csv(LichDb_sFncGrpSens_All_Abun, "output/LichDb_sFncGrpSens_All_Abun.csv")
 ##############################
 
 ##Nitrogen; 4356 rows; Ninety four variables
@@ -254,9 +246,6 @@ LichDb_sFncGrpSens_All_Abun_N_West<-subset(LichDb_sFncGrpSens_All_Abun_N,Area=="
 LichDb_sFncGrpSens_All_Abun_S<-NS_vs_Indices%>%
 inner_join(NS_vs_Indices_S_CMD_only,by=c("megadbid"="Plot"))%>%
 inner_join(LichDb_sFncGrpSens_All_Abun,by=c("megadbid"))
-
-##Remove Nitrogen to avoid using wrong dataset
-#LichDb_sFncGrpSens_All_Abun_S<-LichDb_sFncGrpSens_All_Abun_S[-LichDb_sFncGrpSens_All_Abun_S$N]
 
 ##East and West LichDb_sFncGrpSens_All_Abun
 LichDb_sFncGrpSens_All_Abun_S_East<-subset(LichDb_sFncGrpSens_All_Abun_S,Area=="East")

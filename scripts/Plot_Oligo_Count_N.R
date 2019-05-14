@@ -74,7 +74,7 @@ N.oligotroph._N_Mods_AIC<-lapply(N.oligotroph._N_Mods_run,AIC)
 N.oligotroph._N_Lichen_Count_vs_N_Stats<-cbind(XVAR_names,N.oligotroph._N_Mods_AIC,N.oligotroph._N_Mods_fit,paste(N.oligotroph._N_Formula))
   
   ## Save model stats as an output file
-write.csv(N.oligotroph._N_Lichen_Count_vs_N_Stats,"Count_N.oligotroph._N_all_models.csv")
+write.csv(N.oligotroph._N_Lichen_Count_vs_N_Stats,"output/Count_N.oligotroph._N_all_models.csv")
 
 	## Make predicted data files
 	## Use a model file ... N.oligotroph._Mods_run as input
@@ -84,7 +84,7 @@ MyFunc2<-function (x) {as.data.frame(predict(x, SOURCE, interval=c("confidence")
 N.oligotroph._N_Mod_pred<-mapply(MyFunc2,N.oligotroph._N_Mods_run)%>%as.data.frame()
 
   ##Creates a pdf of all models for a given lichen group. Only used for comparing models. Not for final model plotting.
-pdf(paste("N.oligotroph._N_Lichen_Count_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".pdf",sep=""))
+pdf(paste("output/N.oligotroph._N_Lichen_Count_vs_N_percentiles","_",format(Sys.time(),"%y%d%m"),".pdf",sep=""))
 
 MyPlot<-function (x)
 {
@@ -167,10 +167,10 @@ n_pct_CI_N.oligotroph._N
       # Get coeffecients to plot in figures 
       round(coefficients(N.oligotroph._N_Mods_run$N.oligotroph._N_poly),2)
 
-      #tiff(paste("N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_","_",format(Sys.time(),"%y%d%m"),".tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
-      #jpeg(paste("N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_",format(Sys.time(),"%y%d%m"),".jpeg",sep=""))
-      #jpeg(paste("N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_",format(Sys.time(),"%y%d%m"),"_nolegend.jpeg",sep=""))
-      tiff(paste("N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_","_",format(Sys.time(),"%y%d%m"),"_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
+      #tiff(paste("output/N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_","_",format(Sys.time(),"%y%d%m"),".tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
+      #jpeg(paste("output/N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_",format(Sys.time(),"%y%d%m"),".jpeg",sep=""))
+      #jpeg(paste("output/N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_",format(Sys.time(),"%y%d%m"),"_nolegend.jpeg",sep=""))
+       tiff(paste("output/N.oligotroph._N_Lichen_Count_vs_N_percentiles_US_","_",format(Sys.time(),"%y%d%m"),"_nolegend.tiff",sep=""), width=1200,  height=1200, units="px", pointsize = 24)
       
       x<-N.oligotroph._N_Mod_pred[2]
       x2<-unlist(x, recursive = F, use.names =T)
@@ -197,10 +197,7 @@ n_pct_CI_N.oligotroph._N
       points(3.11,	14.627350, col='red', pch=20,cex=2) #20% decline
       points(8.29,	9.142094, col='red', pch=20,cex=2) #50% decline
       points(14.85,	3.656838, col='red',  pch=20,cex=2) #80% decline
-      #text(max(SOURCE$N)*0.8,max(SOURCE$N.oligotroph.)*0.7,labels=paste("R1=",print(round(N.oligotroph._N_Mods_fit[2],2))))
-      #text(max(SOURCE$N)*0.8,max(SOURCE$N.oligotroph.)*0.75,labels=paste(as.character(N.oligotroph._N_Formula[2])), cex=1)
-      #text(max(SOURCE$N)*0.8,max(SOURCE$N.oligotroph.)*0.65,labels=paste("AIC=",print(round(as.numeric(N.oligotroph._N_Mods_AIC[2],2)))))
-      
+     
       #text(max(SOURCE$N)*0.70,max(SOURCE$N.oligotroph.)*0.60,labels=bquote(atop(.("Count of Oligotrophs = 18.39 -"),.("1.27*N + 0.02*")*N^2)), cex=1.5)
       #text(max(SOURCE$N)*0.70,max(SOURCE$N.oligotroph.)*0.60,labels=bquote(atop(.("Count of Oligotrophs = 18.39 -"),.("1.27*N + 0.02*")*N^2)), cex=1.5)
       text(max(SOURCE$N)*0.65,max(SOURCE$N.oligotroph.)*0.9,labels=bquote(atop(.("Count of Oligotrophs = 18.39 -"),.("1.27*N + 0.02*")*N^2)), cex=1.5)
