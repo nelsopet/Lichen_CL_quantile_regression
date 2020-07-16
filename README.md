@@ -15,6 +15,6 @@ A *critical load* for lichens is defined as the atmospheric deposition level ass
 
 ### Contributors
 
-Peter Nelson (owner)
+Peter Nelson (owner)  
 Heather Root  
 Rob Smith
