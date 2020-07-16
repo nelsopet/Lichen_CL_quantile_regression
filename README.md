@@ -5,7 +5,7 @@
 
 These files are the input, analysis and output files for the 90th quantile regressions of lichen biomonitoring indices against air pollution and climate variables for CONUS published in:
 
->Geiser, L., P. Nelson, S. Jovan, H. Root, and C. Clark. 2019. Assessing ecological risks from atmospheric deposition of nitrogen and sulfur to US forests using epiphytic macrolichens. _Diversity_ 11 (87):1-29. [doi:10.3390/d11060087](https://doi.org/10.3390/d11060087){target="_blank"}
+>Geiser, L., P. Nelson, S. Jovan, H. Root, and C. Clark. 2019. Assessing ecological risks from atmospheric deposition of nitrogen and sulfur to US forests using epiphytic macrolichens. _Diversity_ 11 (87):1-29. [doi:10.3390/d11060087](https://doi.org/10.3390/d11060087)
 
 Contact repository owner for directions on use.
 
