@@ -102,60 +102,108 @@ MyPlot<-function (x)
 for (i in 1:length(XVAR)) MyPlot()
 dev.off()
 
-  ##Calculate confidence intervals for percent decline in lichen metric for a bunch of deposition increments
-new_n_spp_rich_N<-c(1,1.5,2,2.5,3,5,7.5,10,12.5,15,17.5,20) %>% as.data.frame()
-colnames(new_n_spp_rich_N)<-"N"
-100*round(1-(predict(spp_rich_N_Mods_run$spp_rich_N_poly, new_n_spp_rich_N))/max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit),2)
-new_n_CI_spp_rich_N<-predict(spp_rich_N_Mods_run$spp_rich_N_poly, new_n_spp_rich_N, interval=c("confidence"), level = 0.95, type='percentile', se="boot", N=10000)
-stuff<-as.data.frame(new_n_CI_spp_rich_N)
-cbind(
-  round((max(SOURCE_N_fPlot$fit)-(stuff$higher))/max(SOURCE_N_fPlot$fit)*100,0)
-  ,round((max(SOURCE_N_fPlot$fit)-(stuff$fit))/max(SOURCE_N_fPlot$fit)*100,0)
-  ,round((max(SOURCE_N_fPlot$fit)-(stuff$lower))/max(SOURCE_N_fPlot$fit)*100,0)
-)
-  
-  ##Calculate incremental percent decline of each lichen index along the 90th quantile fitted line
-c(
-max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit) ## 0% change
-,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.05) ## 5% change
-,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.10) ## 10% change
-,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.20) ## 20% change
-,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.50) ## 50% change
-,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.80) ## 80% change
-)
+######################################################################
+###  BEGIN changes from 16 July 2020 ##############################
+######################################################################
 
-  ## Heuristically solved for X given a Y using the polynomial to find deposition associated with each incremental percent decline
-test_n<-as.data.frame(6.65)
-colnames(test_n)<-"N"
-  
-  #returns percent decline
-1-(predict(spp_rich_N_Mods_run$spp_rich_N_poly, test_n))/max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)
-  
-  #returns absolute decline
-predict(spp_rich_N_Mods_run$spp_rich_N_poly, test_n)
+### calc Critical Loads (CLs) at 0,5,10,20,50,80% changes
+m    <- spp_rich_N_Mod_pred$spp_rich_N_poly  # focal model
+mval <- max(m$fitted.values)          # maximum species richness
+v    <- c(0, 0.10, 0.20, 0.50, 0.80)  # 0,5,10,20,50,80% changes
+sr_decline <- mval - (mval * v)       # incremental richness decline
+names(sr_decline) <- v                # clean up names
+ndep <- seq(0.1,30,by=0.01)           # sequence of possible N dep
+# fit and CI across WHOLE range of N (can bootstrap CIs instead)
+ci <- data.frame(predict(m, data.frame(N=ndep),  type='none', 
+                         interval='confidence', level=0.95))
+# index NDEP where species decline (nearly) matches fitted/lwr/upr
+CL  <- sapply(sr_decline,
+              function(x) ndep[which.min(abs(c(ci[,'fit']) - x))])
+lwr <- sapply(sr_decline,
+              function(x) ndep[which.min(abs(c(ci[,'lower']) - x))])
+upr <- sapply(sr_decline,
+              function(x) ndep[which.min(abs(c(ci[,'higher']) - x))])
+###    ------->>>   final CRITICAL LOADS   <<<-------    ###
+data.frame(perc_decline=v, sr_decline, CL, lwr, upr)
+###    ------->>>   final CRITICAL LOADS   <<<-------    ###
 
-  #Take deposition associated with incremental percent decline and calculate confidence intervals
-n_pct_spp_rich_N<-c(0.08,0.86,1.70,3.50,6.65,12.8)%>% as.data.frame()
-colnames(n_pct_spp_rich_N)<-"N"
-n_pct_CI_spp_rich_N<-predict(spp_rich_N_Mods_run$spp_rich_N_poly, n_pct_spp_rich_N, interval=c("confidence"), level = 0.95, type='percentile', se="boot", N=10000)
-  
-  # print upper and lower bounds of confidence intervals for incremental percent decline
-n_pct_CI_spp_rich_N
-  # 0 % 32.79772 30.98566 34.62121
-  # 5 % 31.14400 29.78724 32.55391
-  # 10% 29.46393 28.26562 30.44257
-  # 20% 26.21598 25.56544 26.81200
-  # 50% 21.68773 20.96845 22.41112
-  # 80% 17.08599 16.36759 17.73913
+### plot
+png('./CL.png', wid=4.5, hei=4.5, uni='in', bg='transparent', res=700)
+plot(1, type='n', cex=0.7, xlim=c(0,28), ylim=c(4,60),
+     xlab=expression(Nitrogen ~ (kg ~ N ~ ha^{-1} ~ y^{-1})),
+     ylab='Species richness')
+# fit line
+points(m$x[,2], m$fitted.values, col=4, cex=0.2, pch=16)
+# CL points
+points(CL, sr_decline, col=2, cex=1.1, pch=16)
+# text for percent decline
+text(CL, sr_decline + 3, labels=v, col=2, cex=0.8, pch=16, font=2)
+# droplines for CLs
+arrows(CL, sr_decline, CL, rep(0,5), col=2, angle=12, len=0.1)
+# CIs for *CLs*
+segments(CL, sr_decline, lwr, sr_decline, col=1) # lower CI
+segments(CL, sr_decline, upr, sr_decline, col=1) # upper CI
+dev.off()
 
-#Use same heuristic solving approach as above to find deposition associated with upper and lower confidence intervals of incremental precent decline
-  ## Heuristically solved for X given a Y ...	34.58681
-  ## 0 % (max spp_rich) Heuristically solved for X given a Y 10.41...   undef-0.08-0.94  N kg/ha/yr
-  ## 5 % loss of N. Cya Heuristically solved for X given a Y 9.89...	  0.19 -0.86 -1.54 N kg/ha/yr
-  ## 10% loss of N. Cya Heuristically solved for X given a Y 9.37...	  1.21 -1.70 -2.34 N kg/ha/yr
-  ## 20% loss of N. Cya Heuristically solved for X given a Y 8.324995...3.15 -3.50 -3.9 N kg/ha/yr
-  ## 50% loss of N. Cya Heuristically solved for X given a Y 5.203122...n/a  N kg/ha/yr
-  ## 80% loss of N. Cya Heuristically solved for X given a Y 2.081249...n/a kg/ha/yr
+######################################################################
+###    END changes from 16 July 2020 ##############################
+######################################################################
+
+
+#   ##Calculate confidence intervals for percent decline in lichen metric for a bunch of deposition increments
+# new_n_spp_rich_N<-c(1,1.5,2,2.5,3,5,7.5,10,12.5,15,17.5,20) %>% as.data.frame()
+# colnames(new_n_spp_rich_N)<-"N"
+# 100*round(1-(predict(spp_rich_N_Mods_run$spp_rich_N_poly, new_n_spp_rich_N))/max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit),2)
+# new_n_CI_spp_rich_N<-predict(spp_rich_N_Mods_run$spp_rich_N_poly, new_n_spp_rich_N, interval=c("confidence"), level = 0.95, type='percentile', se="boot", N=10000)
+# stuff<-as.data.frame(new_n_CI_spp_rich_N)
+# cbind(
+#   round((max(SOURCE_N_fPlot$fit)-(stuff$higher))/max(SOURCE_N_fPlot$fit)*100,0)
+#   ,round((max(SOURCE_N_fPlot$fit)-(stuff$fit))/max(SOURCE_N_fPlot$fit)*100,0)
+#   ,round((max(SOURCE_N_fPlot$fit)-(stuff$lower))/max(SOURCE_N_fPlot$fit)*100,0)
+# )
+#   
+#   ##Calculate incremental percent decline of each lichen index along the 90th quantile fitted line
+# c(
+# max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit) ## 0% change
+# ,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.05) ## 5% change
+# ,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.10) ## 10% change
+# ,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.20) ## 20% change
+# ,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.50) ## 50% change
+# ,max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)-(max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)*0.80) ## 80% change
+# )
+# 
+#   ## Heuristically solved for X given a Y using the polynomial to find deposition associated with each incremental percent decline
+# test_n<-as.data.frame(6.65)
+# colnames(test_n)<-"N"
+#   
+#   #returns percent decline
+# 1-(predict(spp_rich_N_Mods_run$spp_rich_N_poly, test_n))/max(spp_rich_N_Mod_pred$spp_rich_N_poly$fit)
+#   
+#   #returns absolute decline
+# predict(spp_rich_N_Mods_run$spp_rich_N_poly, test_n)
+# 
+#   #Take deposition associated with incremental percent decline and calculate confidence intervals
+# n_pct_spp_rich_N<-c(0.08,0.86,1.70,3.50,6.65,12.8)%>% as.data.frame()
+# colnames(n_pct_spp_rich_N)<-"N"
+# n_pct_CI_spp_rich_N<-predict(spp_rich_N_Mods_run$spp_rich_N_poly, n_pct_spp_rich_N, interval=c("confidence"), level = 0.95, type='percentile', se="boot", N=10000)
+#   
+#   # print upper and lower bounds of confidence intervals for incremental percent decline
+# n_pct_CI_spp_rich_N
+#   # 0 % 32.79772 30.98566 34.62121
+#   # 5 % 31.14400 29.78724 32.55391
+#   # 10% 29.46393 28.26562 30.44257
+#   # 20% 26.21598 25.56544 26.81200
+#   # 50% 21.68773 20.96845 22.41112
+#   # 80% 17.08599 16.36759 17.73913
+# 
+# #Use same heuristic solving approach as above to find deposition associated with upper and lower confidence intervals of incremental precent decline
+#   ## Heuristically solved for X given a Y ...	34.58681
+#   ## 0 % (max spp_rich) Heuristically solved for X given a Y 10.41...   undef-0.08-0.94  N kg/ha/yr
+#   ## 5 % loss of N. Cya Heuristically solved for X given a Y 9.89...	  0.19 -0.86 -1.54 N kg/ha/yr
+#   ## 10% loss of N. Cya Heuristically solved for X given a Y 9.37...	  1.21 -1.70 -2.34 N kg/ha/yr
+#   ## 20% loss of N. Cya Heuristically solved for X given a Y 8.324995...3.15 -3.50 -3.9 N kg/ha/yr
+#   ## 50% loss of N. Cya Heuristically solved for X given a Y 5.203122...n/a  N kg/ha/yr
+#   ## 80% loss of N. Cya Heuristically solved for X given a Y 2.081249...n/a kg/ha/yr
 
 ### Scatterplots with fitted lines, confidence intervals and percent decline point estimates with and without legends and
 ### some with and without one of the axis labels. Uncomment the one image driver and one text label and legend (if desired).
